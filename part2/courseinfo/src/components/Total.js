@@ -3,9 +3,7 @@ import React from 'react';
 const Total = ({ parts }) => {
   const exercises = parts.map(part => part.exercises);
 
-  let total = 0;
-
-  exercises.forEach((exercise) => total += exercise);
+  const total = exercises.reduce((s, p) => s + p);
 
   return (
       <p><b>Number of exercises {total}</b></p>
