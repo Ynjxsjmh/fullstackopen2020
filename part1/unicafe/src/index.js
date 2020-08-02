@@ -20,7 +20,10 @@ const Feedback = (props) => {
 
 const Statistic = (props) => {
   return (
-    <div>{props.text} {props.value}</div>
+    <tr>
+      <td>{props.text}</td>
+      <td>{props.value}</td>
+    </tr>
   );
 };
 
@@ -40,12 +43,16 @@ const Statistics = (props) => {
   return (
     <div>
       <h1>statistics</h1>
-      <Statistic text="good" value ={props.good} />
-      <Statistic text="neutral" value ={props.neutral} />
-      <Statistic text="bad" value ={props.bad} />
-      <Statistic text="all" value ={all} />
-      <Statistic text="average" value ={score/all} />
-      <Statistic text="positive" value ={props.good/all} />
+      <table>
+        <tbody>
+          <Statistic text="good" value ={props.good} />
+          <Statistic text="neutral" value ={props.neutral} />
+          <Statistic text="bad" value ={props.bad} />
+          <Statistic text="all" value ={all} />
+          <Statistic text="average" value ={score/all} />
+          <Statistic text="positive" value ={props.good/all} />
+        </tbody>
+      </table>
     </div>
   );
 };
