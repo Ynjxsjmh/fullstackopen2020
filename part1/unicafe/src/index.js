@@ -18,14 +18,14 @@ const Feedback = (props) => {
   );
 };
 
-const Statistic = (props) => {
+const Statistics = (props) => {
   const score = 1 * props.good + 0 * props.neutral + (-1) * props.bad;
   const all = props.good + props.neutral + props.bad;
 
   if (all === 0) {
     return (
       <div>
-        <h1>statistic</h1>
+        <h1>statistics</h1>
         <div>good {props.good}</div>
         <div>neutral {props.neutral}</div>
         <div>bad {props.bad}</div>
@@ -38,7 +38,7 @@ const Statistic = (props) => {
 
   return (
     <div>
-      <h1>statistic</h1>
+      <h1>statistics</h1>
       <div>good {props.good}</div>
       <div>neutral {props.neutral}</div>
       <div>bad {props.bad}</div>
@@ -70,7 +70,7 @@ const App = () => {
   return (
     <div>
       <Feedback handleGoodClick={handleGoodClick} handleNeutralClick={handleNeutralClick} handleBadClick={handleBadClick} />
-      <Statistic good={good} neutral={neutral} bad={bad} />
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   );
 };
