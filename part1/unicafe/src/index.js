@@ -19,12 +19,32 @@ const Feedback = (props) => {
 };
 
 const Statistic = (props) => {
+  const score = 1 * props.good + 0 * props.neutral + (-1) * props.bad;
+  const all = props.good + props.neutral + props.bad;
+
+  if (all === 0) {
+    return (
+      <div>
+        <h1>statistic</h1>
+        <div>good {props.good}</div>
+        <div>neutral {props.neutral}</div>
+        <div>bad {props.bad}</div>
+        <div>all {all}</div>
+        <div>average 0</div>
+        <div>positive 0</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1>statistic</h1>
       <div>good {props.good}</div>
       <div>neutral {props.neutral}</div>
       <div>bad {props.bad}</div>
+      <div>all {all}</div>
+      <div>average {score/all}</div>
+      <div>positive {props.good/all}</div>
     </div>
   );
 };
