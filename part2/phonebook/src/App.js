@@ -12,6 +12,7 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('');
   const [ newSearch, setNewSearch ] = useState("");
   const [ errorMessage, setErrorMessage ] = useState(null);
+  const [ isError, setIsError ] = useState(false);
 
   useEffect(() => {
     personService
@@ -21,11 +22,12 @@ const App = () => {
       });
   }, []);
 
-  const setErrorMessageAndTimeout = (message, timeout=5000) => {
+  const setErrorMessageAndTimeout = (message, isError, timeout=5000) => {
     setErrorMessage(message);
     setTimeout(() => {
       setErrorMessage(null);
     }, timeout);
+    setIsError(isError);
   };
 
   const addPerson = (event) => {
@@ -48,10 +50,10 @@ const App = () => {
             setNewName("");
             setNewNumber("");
 
-            setErrorMessageAndTimeout(`Changed ${oldPerson.name} number`);
+            setErrorMessageAndTimeout(`Changed ${oldPerson.name} number`, false);
           })
           .catch(error => {
-            console.log(error);
+            setErrorMessageAndTimeout(`Information of ${oldPerson.name} has already been removed from server`, true, 8000);
           });
       }
     } else {
@@ -62,7 +64,7 @@ const App = () => {
           setNewName('');
           setNewNumber('');
 
-          setErrorMessageAndTimeout(`Added ${returnedPerson.name}`);
+          setErrorMessageAndTimeout(`Added ${returnedPerson.name}`, false);
         });
     }
   };
@@ -88,12 +90,10 @@ const App = () => {
           setNewName("");
           setNewNumber("");
 
-          setErrorMessageAndTimeout(`Deleted ${name}`);
+          setErrorMessageAndTimeout(`Deleted ${name}`, false);
         })
         .catch(error => {
-          alert(
-            `the person '${name}' was already deleted from server`
-          );
+          setErrorMessageAndTimeout(`the person '${name}' was already deleted from server`, true);
           setPersons(persons.filter(p => p.id !== id));
         });
     }
@@ -102,7 +102,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={errorMessage} />
+      <Notification message={errorMessage} isError={isError} />
       <FilterPerson persons={persons} newSearch={newSearch} handleSearchChange={handleSearchChange} />
       <h3>add a new</h3>
       <AddPerson addPerson={addPerson} newName={newName} handleNameChange={handleNameChange}
