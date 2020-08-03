@@ -1,5 +1,18 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Configuration
+
+Please create a `.env` file with one line:
+
+```
+REACT_APP_WEATHER_API_KEY=your weather api key for https://weatherstack.com/
+```
+
+This api key is used in **2.14: Data for countries, step3**.
+
+There is a bug for `Weather.js`: it will indefinitely calls `getWeather`. I think `useEffect` can limit the times. But I cann't figure it out.
+
+
 ## Available Scripts
 
 In the project directory, you can run:

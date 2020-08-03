@@ -1,4 +1,5 @@
 import React from 'react';
+import Weather from "./Weather";
 
 const Country = ({country}) => {
   return (
@@ -6,11 +7,12 @@ const Country = ({country}) => {
       <h1>{country.name}</h1>
       <p>captial {country.capital}</p>
       <p>population {country.population}</p>
-      <h2>languages</h2>
+      <h2>Spoken languages</h2>
       <ul>
         {country.languages.map(language => <li key={language.name}>{language.name}</li>)}
       </ul>
       <p>{country.flag}</p>
+      <Weather capital={country.capital} />
     </div>
   );
 };
