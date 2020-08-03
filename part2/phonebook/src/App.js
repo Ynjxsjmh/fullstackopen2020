@@ -3,6 +3,7 @@ import FilterPerson from './components/FilterPerson';
 import AddPerson from './components/AddPerson';
 import Persons from './components/Persons';
 import personService from './services/persons';
+import Notification from "./components/Notification";
 
 
 const App = () => {
@@ -10,6 +11,7 @@ const App = () => {
   const [ newName, setNewName ] = useState('');
   const [ newNumber, setNewNumber ] = useState('');
   const [ newSearch, setNewSearch ] = useState("");
+  const [ errorMessage, setErrorMessage ] = useState(null);
 
   useEffect(() => {
     personService
@@ -18,6 +20,13 @@ const App = () => {
         setPersons(initialPersons);
       });
   }, []);
+
+  const setErrorMessageAndTimeout = (message, timeout=5000) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, timeout);
+  };
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -38,6 +47,8 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
+
+            setErrorMessageAndTimeout(`Changed ${oldPerson.name} number`);
           })
           .catch(error => {
             console.log(error);
@@ -50,6 +61,8 @@ const App = () => {
           setPersons(persons.concat(returnedPerson));
           setNewName('');
           setNewNumber('');
+
+          setErrorMessageAndTimeout(`Added ${returnedPerson.name}`);
         });
     }
   };
@@ -74,6 +87,8 @@ const App = () => {
           setPersons(persons.filter(p => p.id !== id));
           setNewName("");
           setNewNumber("");
+
+          setErrorMessageAndTimeout(`Deleted ${name}`);
         })
         .catch(error => {
           alert(
@@ -87,6 +102,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <FilterPerson persons={persons} newSearch={newSearch} handleSearchChange={handleSearchChange} />
       <h3>add a new</h3>
       <AddPerson addPerson={addPerson} newName={newName} handleNameChange={handleNameChange}
