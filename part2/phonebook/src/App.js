@@ -51,6 +51,24 @@ const App = () => {
     setNewSearch(event.target.value);
   };
 
+  const handleDeletePerson = (name, id) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      personService
+        .deleteById(id)
+        .then(() => {
+          setPersons(persons.filter(p => p.id !== id));
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch(error => {
+          alert(
+            `the person '${name}' was already deleted from server`
+          );
+          setPersons(persons.filter(p => p.id !== id));
+        });
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -60,7 +78,7 @@ const App = () => {
                  newNumber={newNumber} handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons persons={persons} />
+      <Persons persons={persons} handleDeletePerson={handleDeletePerson} />
     </div>
   );
 };
