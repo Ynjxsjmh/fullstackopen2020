@@ -65,6 +65,9 @@ const App = () => {
           setNewNumber('');
 
           setErrorMessageAndTimeout(`Added ${returnedPerson.name}`, false);
+        })
+        .catch(error => {
+          setErrorMessageAndTimeout(error.response.data.error, true, 8000);
         });
     }
   };
