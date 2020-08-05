@@ -28,9 +28,7 @@ app.get('/api/persons', (req, res) => {
 });
 
 app.get('/api/persons/:id', (req, res, next) => {
-  const id = req.params.id;
-
-  Person.findById(id)
+  Person.findById(req.params.id)
     .then(person => {
       if (person) {
         res.json(person);
