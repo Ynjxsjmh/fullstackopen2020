@@ -76,6 +76,24 @@ test('a valid blog can be added', async () => {
   );
 });
 
+test('new blogs has 0 likes if not specified', async () => {
+  const newBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogs = await Blog.find({ title: newBlog.title });
+
+  expect(blogs[0].likes).toBe(0);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
