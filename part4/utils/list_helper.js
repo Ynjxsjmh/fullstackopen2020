@@ -41,9 +41,34 @@ const mostBlogs = (blogs) => {
   return blog;
 };
 
+const mostLikes = blogs => {
+  if (blogs.length === 0) {
+    return {};
+  }
+
+  let arr = new Array();
+
+  for (let i = 0; i < blogs.length; i++) {
+    arr[blogs[i].author] = (arr[blogs[i].author] || 0) + blogs[i].likes;
+  }
+
+  let min = -1;
+  let blog;
+
+  Object.keys(arr).forEach(function(key) {
+    if (arr[key] > min) {
+      blog = {author: key, likes: arr[key]};
+      min = arr[key];
+    }
+  });
+
+  return blog;
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 };
