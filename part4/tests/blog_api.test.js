@@ -94,6 +94,32 @@ test('new blogs has 0 likes if not specified', async () => {
   expect(blogs[0].likes).toBe(0);
 });
 
+test('POST /api/blogs check if title is empty, 400 Bad request is returned', async () => {
+  const newBlog = {
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 1
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400);
+});
+
+test('POST /api/blogs check if url is empty, 400 Bad request is returned', async () => {
+  const newBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    likes: 1
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
