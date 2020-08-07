@@ -81,6 +81,20 @@ describe('when there is initially one user in db', () => {
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
 
+  test('POST /api/users with too short password fails', async () => {
+    const newUser = {
+      username: 'Hessu',
+      name: 'Edsger W. Dijkstra',
+      password: 's'
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+  });
+
 });
 
 afterAll(() => {
