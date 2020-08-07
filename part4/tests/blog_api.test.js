@@ -104,6 +104,25 @@ test('POST /api/blogs check if url is empty, 400 Bad request is returned', async
     .expect(400);
 });
 
+test('DELETE /api/blogs/:id check deleting a single blog post resource', async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToDelete = blogsAtStart[0];
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204);
+
+  const blogsAtEnd = await helper.blogsInDb();
+
+  expect(blogsAtEnd).toHaveLength(
+    helper.initialBlogs.length - 1
+  );
+
+  const titles = blogsAtEnd.map(r => r.title);
+
+  expect(titles).not.toContain(blogToDelete.title);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
