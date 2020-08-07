@@ -3,8 +3,25 @@ const supertest = require('supertest');
 const app = require('../app');
 const helper = require('./test_helper');
 const api = supertest(app);
+const bcrypt = require('bcrypt');
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
+const user123Login = async () => {
+  const loginForm = {
+    username: '123',
+    password: '123'
+  };
+
+  const response = await api
+        .post('/api/login')
+        .send(loginForm)
+        .expect(200);
+
+  const user = response.body;
+
+  return user;
+};
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -14,6 +31,13 @@ beforeEach(async () => {
 
   blogObject = new Blog(helper.initialBlogs[1]);
   await blogObject.save();
+
+  await User.deleteMany({});
+
+  const passwordHash = await bcrypt.hash('123', 10);
+  const user = new User({ username: '123', passwordHash });
+
+  await user.save();
 });
 
 test('blogs are returned as json', async () => {
@@ -38,6 +62,8 @@ test('the unique identifier property of the blog posts is named "id"', async () 
 });
 
 test('a valid blog can be added', async () => {
+  const user = await user123Login();
+
   const newBlog = {
     title: "Canonical string reduction",
     author: "Edsger W. Dijkstra",
@@ -47,6 +73,7 @@ test('a valid blog can be added', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', 'bearer ' + user.token)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/);
@@ -60,7 +87,31 @@ test('a valid blog can be added', async () => {
   );
 });
 
+test('POST /api/blogs/ a blog without token cannot be added', async () => {
+  const newBlog = {
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+    likes: 12,
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+
+  const titles = blogsAtEnd.map(r => r.title);
+  expect(titles).not.toContain(
+    'Canonical string reduction'
+  );
+});
+
 test('new blogs has 0 likes if not specified', async () => {
+  const user = await user123Login();
+
   const newBlog = {
     title: 'Canonical string reduction',
     author: 'Edsger W. Dijkstra',
@@ -69,6 +120,7 @@ test('new blogs has 0 likes if not specified', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', 'bearer ' + user.token)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/);
