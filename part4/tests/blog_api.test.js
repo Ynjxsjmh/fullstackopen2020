@@ -123,6 +123,23 @@ test('DELETE /api/blogs/:id check deleting a single blog post resource', async (
   expect(titles).not.toContain(blogToDelete.title);
 });
 
+test('PUT /api/blogs/:id check functionality for updating the information of an individual blog post', async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToUpdate = blogsAtStart[0];
+  blogToUpdate.likes = 999;
+
+  const response = await api
+                     .put(`/api/blogs/${blogToUpdate.id}`)
+                     .send(blogToUpdate);
+
+  expect(response.body).toEqual(blogToUpdate);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  const updatedBlog = blogsAtEnd.filter(blog => blog.id === blogToUpdate.id)[0];
+
+  expect(updatedBlog).toEqual(blogToUpdate);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
