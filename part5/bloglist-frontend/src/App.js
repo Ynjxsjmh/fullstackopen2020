@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
@@ -15,6 +15,8 @@ const App = () => {
   const [author, setAuthor] = useState('');
   const [notification, setNotification] = useState(null);
   const [isError, setIsError] = useState(false);
+
+  const newBlogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -78,6 +80,7 @@ const App = () => {
       title, author, url
     };
 
+    newBlogFormRef.current.toggleVisibility();
     blogService.create(blogObject).then(blog => {
       setBlogs(blogs.concat(blog));
       setTitle('');
@@ -126,7 +129,8 @@ const App = () => {
   );
 
   const newBlogFrom = () => (
-    <Togglable buttonLabel='new blog'>
+    <Togglable buttonLabel='new blog' ref={newBlogFormRef}>
+      <h2>create new</h2>
       <form onSubmit={addBlog}>
         <div>
           title
