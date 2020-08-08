@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Blog from './components/Blog';
+import Notification from './components/Notification';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
@@ -11,6 +12,8 @@ const App = () => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
+  const [notification, setNotification] = useState(null);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -22,10 +25,18 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      blogService.setToken(user.token);
       setUser(user);
+      blogService.setToken(user.token);
     }
   }, []);
+
+  const setNotificationAndTimeout = (message, isError, timeout=5000) => {
+    setNotification(message);
+    setTimeout(() => {
+      setNotification(null);
+    }, timeout);
+    setIsError(isError);
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -42,8 +53,10 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
+
+      setNotificationAndTimeout(`${user.username} login successfully`, false);
     } catch (exception) {
-      alert('Wrong credentials');
+      setNotificationAndTimeout(`wrong username or password`, true, 8000);
     }
   };
 
@@ -51,6 +64,8 @@ const App = () => {
     event.preventDefault();
 
     window.localStorage.removeItem('loggedBlogappUser');
+
+    setNotificationAndTimeout(`${user.username} login out successfully`, false);
     setUser(null);
   };
 
@@ -67,6 +82,10 @@ const App = () => {
       setTitle('');
       setAuthor('');
       setUrl('');
+      setNotificationAndTimeout(`a new blog ${blog.title} by ${blog.author} added`, false);
+    })
+    .catch(error => {
+      setNotificationAndTimeout(error.response.data.error, true, 8000);
     });
   };
 
@@ -143,6 +162,8 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notification} isError={isError} />
+
       {user === null ?
         loginForm() :
         <div>
