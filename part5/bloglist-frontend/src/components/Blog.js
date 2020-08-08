@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import blogService from '../services/blogs';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, setUpdate }) => {
   const [visible, setVisible] = useState(false);
 
   const hideWhenVisible = { display: visible ? 'none' : '' };
@@ -8,6 +9,16 @@ const Blog = ({ blog }) => {
 
   const toggleVisibility = () => {
     setVisible(!visible);
+  };
+
+  const like = async (event) => {
+    event.preventDefault();
+    const likes = blog.likes + 1;
+    const newBlog = { ...blog, likes };
+    blogService.update(blog.id, newBlog)
+      .then(() => {
+        setUpdate(Math.floor(Math.random() * 100));
+      });
   };
 
   const blogStyle = {
@@ -31,7 +42,7 @@ const Blog = ({ blog }) => {
         {blog.url}
         <br/>
         {blog.likes}
-        <button>likes</button>
+        <button onClick={like}>likes</button>
         <br/>
         {blog.author}
       </div>

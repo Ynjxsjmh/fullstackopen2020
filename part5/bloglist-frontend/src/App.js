@@ -8,6 +8,7 @@ import loginService from './services/login';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
+  const [update, setUpdate] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -23,7 +24,7 @@ const App = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     );
-  }, []);
+  }, [update]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
@@ -114,7 +115,7 @@ const App = () => {
   const blogForm = () => (
     <>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} setUpdate={setUpdate} />
       )}
     </>
   );
