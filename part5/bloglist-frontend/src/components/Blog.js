@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import blogService from '../services/blogs';
 
-const Blog = ({ blog, setUpdate }) => {
+const Blog = ({ blog, setUpdate, user }) => {
   const [visible, setVisible] = useState(false);
+  const [isOwn, setIsOwn] = useState(true);
 
   const hideWhenVisible = { display: visible ? 'none' : '' };
   const showWhenVisible = { display: visible ? '' : 'none' };
 
+  const removeWhenOwn = { display: isOwn ? '' : 'none' };
+
   const toggleVisibility = () => {
     setVisible(!visible);
+    if (blog.user.username !== user.username) {
+      setIsOwn(false);
+    }
   };
 
   const like = async (event) => {
@@ -19,6 +25,15 @@ const Blog = ({ blog, setUpdate }) => {
       .then(() => {
         setUpdate(Math.floor(Math.random() * 100));
       });
+  };
+
+  const remove = async (event) => {
+    event.preventDefault();
+
+    if (window.confirm(`remove blog ${blog.title}) by ${blog.author}`)) {
+      await blogService.remove(blog.id);
+      setUpdate(Math.floor(Math.random() * 100));
+    }
   };
 
   const blogStyle = {
@@ -45,6 +60,9 @@ const Blog = ({ blog, setUpdate }) => {
         <button onClick={like}>likes</button>
         <br/>
         {blog.author}
+        <div style={removeWhenOwn}>
+          <button onClick={remove}>remove</button>
+        </div>
       </div>
     </div>
   );
