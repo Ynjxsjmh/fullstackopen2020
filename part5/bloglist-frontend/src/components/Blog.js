@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import blogService from '../services/blogs';
 
-const Blog = ({ blog, setUpdate, user }) => {
+const Blog = ({ blog, user, addLike, removeBlog }) => {
   const [visible, setVisible] = useState(false);
   const [isOwn, setIsOwn] = useState(true);
 
@@ -21,18 +21,14 @@ const Blog = ({ blog, setUpdate, user }) => {
     event.preventDefault();
     const likes = blog.likes + 1;
     const newBlog = { ...blog, likes };
-    blogService.update(blog.id, newBlog)
-      .then(() => {
-        setUpdate(Math.floor(Math.random() * 100));
-      });
+    addLike(blog.id, newBlog);
   };
 
   const remove = async (event) => {
     event.preventDefault();
 
     if (window.confirm(`remove blog ${blog.title}) by ${blog.author}`)) {
-      await blogService.remove(blog.id);
-      setUpdate(Math.floor(Math.random() * 100));
+      removeBlog(blog.id);
     }
   };
 
