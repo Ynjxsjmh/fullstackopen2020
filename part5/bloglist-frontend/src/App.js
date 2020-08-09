@@ -76,13 +76,14 @@ const App = () => {
 
   const addBlog = async (blogObject) => {
     newBlogFormRef.current.toggleVisibility();
-    blogService.create(blogObject).then(blog => {
+
+    try {
+      const blog = await blogService.create(blogObject);
       setBlogs(blogs.concat(blog));
       setNotificationAndTimeout(`a new blog ${blog.title} by ${blog.author} added`, false);
-    })
-    .catch(error => {
+    } catch(error) {
       setNotificationAndTimeout(error.response.data.error, true, 8000);
-    });
+    }
   };
 
   const loginForm = () => (
