@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
-import reducer from './reducer';
+import counterReducer from './counterReducer';
 
-const store = createStore(reducer);
+const store = createStore(counterReducer);
 
 const App = () => {
   const good = () => {
