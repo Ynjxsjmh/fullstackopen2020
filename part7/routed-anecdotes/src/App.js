@@ -1,7 +1,7 @@
 import {
   BrowserRouter as Router,
   Switch, Route, Link,
-  useParams
+  useParams, useHistory
 } from "react-router-dom";
 import React, { useState } from 'react';
 
@@ -66,7 +66,7 @@ const CreateNew = (props) => {
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState('');
   const [info, setInfo] = useState('');
-
+  const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -76,6 +76,7 @@ const CreateNew = (props) => {
       info,
       votes: 0
     });
+    history.push('/');
   };
 
   return (
