@@ -8,14 +8,8 @@ const reducer = (state = [], action) => {
     case 'VOTE':
       const id = action.data.id;
 
-      const anecdoteToVote = state.find(a => a.id === id);
-      const votedAnecdote = {
-        ...anecdoteToVote,
-        votes: anecdoteToVote.votes + 1
-      };
-
       return state.map(anecdote =>
-        anecdote.id !== id ? anecdote : votedAnecdote
+        anecdote.id !== id ? anecdote : action.data
       );
     case 'NEW_ANECDOTE':
       return state.concat(action.data);
@@ -39,10 +33,17 @@ export const createAnecdote = (content) => {
   };
 };
 
-export const voteById = (id) => {
-  return {
-    type: 'VOTE',
-    data: { id }
+export const voteById = (anecdoteToVote) => {
+  return async dispatch => {
+    const votedAnecdote = {
+      ...anecdoteToVote,
+      votes: anecdoteToVote.votes + 1
+    };
+    await anecdoteService.addLike(votedAnecdote);
+    dispatch({
+      type: 'VOTE',
+      data: votedAnecdote,
+    });
   };
 };
 
