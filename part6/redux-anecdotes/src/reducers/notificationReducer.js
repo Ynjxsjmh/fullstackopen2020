@@ -1,7 +1,14 @@
-export const createNotification = (content) => {
-  return {
-    type: 'SET_NOTIFICATION',
-    data: content
+
+export const createNotification = (content, delay=5) => {
+  return async dispatch => {
+    dispatch({
+      type: 'SET_NOTIFICATION',
+      data: content
+    });
+
+    setTimeout(() => {
+      dispatch(deleteNotification(""));
+    }, delay * 1000);
   };
 };
 
