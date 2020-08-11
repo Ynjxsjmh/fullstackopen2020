@@ -13,6 +13,7 @@
     "redux": "^4.0.5"
   },
   "scripts": {
+    "server": "json-server -p3001 --watch db.json",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -34,6 +35,7 @@
     ]
   },
   "devDependencies": {
+    "json-server": "^0.16.1",
     "redux-devtools-extension": "^2.13.8"
   }
 }
