@@ -1,21 +1,21 @@
 import React from 'react';
 
-const Notification = ({ message, isError }) => {
+const Notification = ({ message }) => {
   if (message === null) {
     return null;
   }
 
-  if (isError) {
+  if (message.isError) {
     return (
       <div className="notification" style={{color:'red', borderColor:'red'}}>
-        {message}
+        {message.content}
       </div>
     );
   }
 
   return (
     <div className="notification">
-      {message}
+      {message.content}
     </div>
   );
 };

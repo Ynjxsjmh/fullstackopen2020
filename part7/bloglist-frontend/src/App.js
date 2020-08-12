@@ -18,7 +18,6 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [isError, setIsError] = useState(false);
 
   const newBlogFormRef = useRef();
 
@@ -37,6 +36,10 @@ const App = () => {
     }
   }, []);
 
+  const setNotification = (content, isError, timeout=5) => {
+    dispatch(createNotification({ content, isError }, timeout));
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -53,11 +56,9 @@ const App = () => {
       setUsername('');
       setPassword('');
 
-      dispatch(createNotification(`${user.username} login successfully`));
-      setIsError(false);
+      setNotification(`${user.username} login successfully`, false);
     } catch (exception) {
-      dispatch(createNotification(`wrong username or password`, 8));
-      setIsError(true);
+      setNotification(`wrong username or password`, true, 8);
     }
   };
 
@@ -66,8 +67,7 @@ const App = () => {
 
     window.localStorage.removeItem('loggedBlogappUser');
 
-    dispatch(createNotification(`${user.username} login out successfully`));
-    setIsError(false);
+    setNotification(`${user.username} login out successfully`, false);
     setUser(null);
   };
 
@@ -76,33 +76,28 @@ const App = () => {
 
     try {
       dispatch(createBlog(blogObject));
-      dispatch(createNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`));
-      setIsError(false);
+      setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, false);
     } catch(error) {
-      dispatch(createNotification(error.response.data.error, 8));
-      setIsError(true);
+      setNotification(error.response.data.error, true, 8);
     }
   };
 
   const addLike = async (id, blogObject) => {
     try {
       dispatch(likeBlog(blogObject));
-      dispatch(createNotification(`like added to ${blogObject.title} by ${blogObject.author}`));
-      setIsError(false);
+      setNotification(`like added to ${blogObject.title} by ${blogObject.author}`, false);
     } catch (error)  {
-      dispatch(createNotification(error.response.data.error, 8));
-      setIsError(true);
+      setNotification(error.response.data.error, true, 8);
     }
   };
 
   const removeBlog = async (id, blogObject) => {
     try {
       dispatch(deleteBlog(id));
-      dispatch(createNotification(`${blogObject.title} by ${blogObject.author} removed`));
-      setIsError(false);
+      setNotification(`${blogObject.title} by ${blogObject.author} removed`, false);
     } catch (error) {
-      dispatch(createNotification(error.response.data.error, 8));
-      setIsError(true);
+      console.log("^^^^^^^^^^^^^^^^^^^");
+      setNotification(error.response.data.error, true, 8);
     }
   };
 
@@ -151,7 +146,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={notification} isError={isError} />
+      <Notification message={notification} />
 
       {user === null ?
         loginForm() :
