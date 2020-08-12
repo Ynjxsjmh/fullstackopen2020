@@ -4,20 +4,19 @@ import Blog from './components/Blog';
 import Notification from './components/Notification';
 import NewBlogForm from './components/NewBlogForm';
 import Togglable from './components/Togglable';
-import blogService from './services/blogs';
-import loginService from './services/login';
 
 import {initializeBlogs, createBlog, likeBlog, deleteBlog} from './reducers/blogReducer';
 import {createNotification} from './reducers/notificationReducer';
+import {login, logout, initializeUser } from './reducers/userReducer';
 
 
 const App = () => {
   const blogs = useSelector(state => state.blogs);
   const notification = useSelector(state => state.notification);
+  const user = useSelector(state => state.user);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
 
   const newBlogFormRef = useRef();
 
@@ -25,39 +24,24 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initializeBlogs());
+    dispatch(initializeUser());
   }, [dispatch]);
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
 
   const setNotification = (content, isError, timeout=5) => {
     dispatch(createNotification({ content, isError }, timeout));
   };
 
-  const handleLogin = async (event) => {
+  const handleLogin = (event) => {
     event.preventDefault();
 
     try {
-      const user = await loginService.login({
-        username, password,
-      });
-
-      window.localStorage.setItem(
-        'loggedBlogappUser', JSON.stringify(user)
-      );
-      blogService.setToken(user.token);
-      setUser(user);
+      dispatch(login(username, password));
       setUsername('');
       setPassword('');
 
-      setNotification(`${user.username} login successfully`, false);
+      setNotification(`${username} login successfully`, false);
     } catch (exception) {
+      console.log(exception);
       setNotification(`wrong username or password`, true, 8);
     }
   };
@@ -65,10 +49,8 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault();
 
-    window.localStorage.removeItem('loggedBlogappUser');
-
-    setNotification(`${user.username} login out successfully`, false);
-    setUser(null);
+    setNotification(`${user.username} logout successfully`, false);
+    dispatch(logout());
   };
 
   const addBlog = async (blogObject) => {
