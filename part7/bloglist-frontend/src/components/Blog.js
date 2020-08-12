@@ -27,7 +27,7 @@ const Blog = ({ blog, user, addLike, removeBlog }) => {
     event.preventDefault();
 
     if (window.confirm(`remove blog ${blog.title}) by ${blog.author}`)) {
-      removeBlog(blog.id);
+      removeBlog(blog.id, blog);
     }
   };
 

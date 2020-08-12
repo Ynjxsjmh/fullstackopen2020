@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import NewBlogForm from './components/NewBlogForm';
@@ -6,8 +7,12 @@ import Togglable from './components/Togglable';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
+import {initializeBlogs, createBlog, likeBlog, deleteBlog} from './reducers/blogReducer';
+
+
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  const blogs = useSelector(state => state.blogs);
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -16,11 +21,11 @@ const App = () => {
 
   const newBlogFormRef = useRef();
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    );
-  }, []);
+    dispatch(initializeBlogs());
+  }, [dispatch]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
@@ -74,36 +79,29 @@ const App = () => {
     newBlogFormRef.current.toggleVisibility();
 
     try {
-      const blog = await blogService.create(blogObject);
-      setBlogs(blogs.concat(blog));
-      setNotificationAndTimeout(`a new blog ${blog.title} by ${blog.author} added`, false);
+      dispatch(createBlog(blogObject));
+
+      setNotificationAndTimeout(`a new blog ${blogObject.title} by ${blogObject.author} added`, false);
     } catch(error) {
       setNotificationAndTimeout(error.response.data.error, true, 8000);
     }
   };
 
   const addLike = async (id, blogObject) => {
-    blogService.update(id, blogObject)
-      .then(() => {
-        const updatedBlog = {
-          ...blogObject,
-          id,
-        };
+    try {
+      dispatch(likeBlog(blogObject));
 
-        setBlogs(blogs.map((blog) => (blog.id !== id ? blog : updatedBlog)));
-        setNotificationAndTimeout(`like added to ${blogObject.title} by ${blogObject.author}`, false);
-      })
-      .catch(error => {
-        setNotificationAndTimeout(error.response.data.error, true, 8000);
-      });
+      setNotificationAndTimeout(`like added to ${blogObject.title} by ${blogObject.author}`, false);
+    } catch (error)  {
+      setNotificationAndTimeout(error.response.data.error, true, 8000);
+    }
   };
 
-  const removeBlog = async (id) => {
+  const removeBlog = async (id, blogObject) => {
     try {
-      await blogService.remove(id);
-      const blog = blogs.find((blog) => blog.id === id);
-      setBlogs(blogs.filter((blog) => blog.id !== id));
-      setNotificationAndTimeout(`${blog.title} by ${blog.author} removed`, false);
+      dispatch(deleteBlog(id));
+
+      setNotificationAndTimeout(`${blogObject.title} by ${blogObject.author} removed`, false);
     } catch (error) {
       setNotificationAndTimeout(error.response.data.error, true, 8000);
     }
