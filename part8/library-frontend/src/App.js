@@ -15,12 +15,23 @@ query {
 }
 `;
 
+const ALL_BOOKS = gql`
+query {
+  allBooks {
+    title
+    author
+    published
+  }
+}
+`;
+
 const App = () => {
   const [page, setPage] = useState('authors');
 
   const result = useQuery(ALL_AUTHORS);
+  const booksResult = useQuery(ALL_BOOKS);
 
-  if (result.loading)  {
+  if (result.loading || booksResult.loading)  {
     return <div>loading...</div>;
   }
 
@@ -37,7 +48,7 @@ const App = () => {
       />
 
       <Books
-        show={page === 'books'}
+        show={page === 'books'} books={booksResult.data.allBooks}
       />
 
       <NewBook
