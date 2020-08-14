@@ -58,7 +58,7 @@ const typeDefs = gql`
 const resolvers = {
   Author: {
     bookCount: (root) => {
-      return books.filter(p => p.author === root.name).length;
+      return Book.countDocuments({ author: root });
     }
   },
 
@@ -97,16 +97,16 @@ const resolvers = {
 
       return book;
     },
-    editAuthor: (root, args) => {
-      const author = authors.find(p => p.name === args.name);
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.name });
 
       if (!author) {
         return null;
       }
 
-      const editedAuthor = { ...author, born: args.setBornTo };
-      authors = authors.map(p => p.name === args.name ? editedAuthor : p);
-      return editedAuthor;
+      author.born = args.setBornTo;
+
+      return author.save();
     },
   },
 };
