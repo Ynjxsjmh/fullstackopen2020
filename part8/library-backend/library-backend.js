@@ -92,7 +92,7 @@ const resolvers = {
     bookCount: () => Book.collection.countDocuments(),
     allAuthors: () => Author.find({}),
     allBooks: async (root, args) => {
-      let filteredBooks = await Book.find({});
+      let filteredBooks = await Book.find({}).populate('author');
 
       if (args.author !== undefined) {
         filteredBooks = filteredBooks.filter(b => b.author === args.author);
