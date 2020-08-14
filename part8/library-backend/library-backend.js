@@ -1,4 +1,4 @@
-const { ApolloServer, gql, UserInputError } = require('apollo-server');
+const { ApolloServer, gql, UserInputError, AuthenticationError } = require('apollo-server');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('./models/user');
@@ -110,7 +110,13 @@ const resolvers = {
   },
 
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context ) => {
+      const currentUser = context.currentUser;
+
+      if (!currentUser) {
+        throw new AuthenticationError("not authenticated");
+      }
+
       const authors = await Author.find({});
       const filteredAuthors = authors.length === 0 ? [] : authors.filter(a => a.name === args.author);
 
@@ -140,7 +146,14 @@ const resolvers = {
 
       return book;
     },
-    editAuthor: async (root, args) => {
+
+    editAuthor: async (root, args, context) => {
+      const currentUser = context.currentUser;
+
+      if (!currentUser) {
+        throw new AuthenticationError("not authenticated");
+      }
+
       const author = await Author.findOne({ name: args.name });
 
       if (!author) {
