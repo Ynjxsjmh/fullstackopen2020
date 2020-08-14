@@ -1,5 +1,4 @@
 const { ApolloServer, gql } = require('apollo-server');
-const { v1: uuid } = require('uuid');
 const mongoose = require('mongoose');
 const Book = require('./models/book');
 const Author = require('./models/author');
@@ -64,11 +63,11 @@ const resolvers = {
   },
 
   Query: {
-    authorCount: () => authors.length,
-    bookCount: () => books.length,
-    allAuthors: () => authors,
-    allBooks: (root, args) => {
-      let filteredBooks = books;
+    authorCount: () => Author.collection.countDocuments(),
+    bookCount: () => Book.collection.countDocuments(),
+    allAuthors: () => Author.find({}),
+    allBooks: async (root, args) => {
+      let filteredBooks = await Book.find({});
 
       if (args.author !== undefined) {
         filteredBooks = filteredBooks.filter(b => b.author === args.author);
@@ -83,13 +82,19 @@ const resolvers = {
   },
 
   Mutation: {
-    addBook: (root, args) => {
-      const book = { ...args, id: uuid() };
-      books = books.concat(book);
-      if (authors.filter(a => a.name === args.author).length === 0) {
-        const author = { name: args.author, born: null, id: uuid() };
-        authors = authors.concat(author);
+    addBook: async (root, args) => {
+      const authors = await Author.find({});
+      const filteredAuthors = authors.length === 0 ? [] : authors.filter(a => a.name === args.author);
+
+      if (filteredAuthors.length === 0) {
+        const author = new Author({ name: args.author, born: null });
+        await author.save();
+        filteredAuthors.push(author);
       }
+
+      const book = new Book({ ...args, author: filteredAuthors[0] });
+      await book.save();
+
       return book;
     },
     editAuthor: (root, args) => {
