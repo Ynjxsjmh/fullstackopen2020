@@ -1,5 +1,6 @@
 const { ApolloServer, gql, UserInputError } = require('apollo-server');
 const mongoose = require('mongoose');
+const User = require('./models/user');
 const Book = require('./models/book');
 const Author = require('./models/author');
 
@@ -33,11 +34,22 @@ const typeDefs = gql`
     genres: [String]!
   }
 
+  type User {
+    username: String!
+    favoriteGenre: String!
+    id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
   type Query {
     authorCount: Int!
     bookCount: Int!,
     allAuthors: [Author!]!,
     allBooks(author: String, genre: String): [Book!]!,
+    me: User,
   }
 
   type Mutation {
@@ -52,6 +64,16 @@ const typeDefs = gql`
       name: String!
       setBornTo: Int!
     ): Author
+
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+
+    login(
+      username: String!
+      password: String!
+    ): Token
   }
 `;
 
