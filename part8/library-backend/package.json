@@ -10,6 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "apollo-server": "^2.16.1",
-    "graphql": "^15.3.0"
+    "graphql": "^15.3.0",
+    "mongoose": "^5.9.29",
+    "mongoose-unique-validator": "^2.0.3"
   }
 }
