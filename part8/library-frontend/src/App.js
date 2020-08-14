@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import Authors from './components/Authors';
 import Books from './components/Books';
 import NewBook from './components/NewBook';
@@ -9,6 +10,14 @@ const App = () => {
   const [token, setToken] = useState(null);
   const [page, setPage] = useState('authors');
 
+  const client = useApolloClient();
+
+  const logout = () => {
+    setToken(null);
+    localStorage.clear();
+    client.resetStore();
+  };
+
   return (
     <div>
       <div>
@@ -18,7 +27,7 @@ const App = () => {
         {token ? (
           <>
             <button onClick={() => setPage('add')}>add book</button>
-            <button>logout</button>
+            <button onClick={logout}>logout</button>
           </>
         ) : (
           <button onClick={() => setPage('login')}>login</button>
