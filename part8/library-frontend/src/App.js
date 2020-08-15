@@ -6,15 +6,30 @@ import NewBook from './components/NewBook';
 import LoginForm from './components/LoginForm';
 import Recommend from './components/Recommend';
 
-import { BOOK_ADDED } from './queries';
+import { BOOK_ADDED, ALL_BOOKS } from './queries';
 
 const App = () => {
   const [token, setToken] = useState(null);
   const [page, setPage] = useState('authors');
 
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) =>
+      set.map(p => p.id).includes(object.id);
+
+    const dataInStore = client.readQuery({ query: ALL_BOOKS });
+    if (!includedIn(dataInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks: dataInStore.allBooks.concat(addedBook) }
+      });
+    }
+  };
+
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
-      window.alert(JSON.stringify(subscriptionData));
+      const addedBook = subscriptionData.data.bookAdded;
+      window.alert(JSON.stringify(addedBook));
+      updateCacheWith(addedBook);
     }
   });
 
@@ -53,6 +68,7 @@ const App = () => {
 
       <NewBook
         show={page === 'add'}
+        updateCacheWith={updateCacheWith}
       />
 
       <Recommend
