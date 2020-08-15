@@ -92,17 +92,30 @@ const resolvers = {
     bookCount: () => Book.collection.countDocuments(),
     allAuthors: () => Author.find({}),
     allBooks: async (root, args) => {
-      let filteredBooks = await Book.find({}).populate('author');
+      if (args.author && args.genre) {
+        const author = await Author.findOne({ name: args.author });
 
-      if (args.author !== undefined) {
-        filteredBooks = filteredBooks.filter(b => b.author === args.author);
+        const books = await Book.find({
+          $and: [
+            { author: { $in: author.id } },
+            { genres: { $in: args.genre } },
+          ],
+        }).populate("author");
+
+        return books;
+      } else if (args.author) {
+        const author = await Author.findOne({ name: args.author });
+
+        const books = await Book.find({ author: { $in: author.id } }).populate("author");
+
+        return books;
+      } else if (args.genre) {
+        const books = await Book.find({ genres: { $in: args.genre } }).populate("author");
+
+        return books;
+      } else {
+        return Book.find({}).populate("author");
       }
-
-      if (args.genre !== undefined) {
-        filteredBooks = filteredBooks.filter(b => b.genres.includes(args.genre));
-      }
-
-      return filteredBooks;
     },
     me: (root, args, context) => {
       return context.currentUser;
